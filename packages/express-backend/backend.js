@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 
 //variables
 const app  = express()
@@ -51,15 +52,18 @@ const findUserByNJ = (name, job) => {
 
 const deleteUser = (id) => {
     return users["users_list"].filter(
-        (user) => user["id"] !== id
+        (user) => user["id"] != id
     );
 };
 
 const addUser = (user) => {
+    user["id"] = Math.round((Math.random() * 100000)+1)
     users["users_list"].push(user);
     return user;
 };
 
+
+app.use(cors());
 app.use(express.json());
 
 //get functions
@@ -97,7 +101,7 @@ app.get("/users/:id", (req, res) => {
 app.post("/users", (req, res) => {
     const newUser = req.body;
     addUser(newUser);
-    res.send();
+    res.status(201).send(newUser);
 });
 
 //delete functions
@@ -108,7 +112,7 @@ app.delete("/users/:id", (req, res) => {
         res.status(404).send("Resource not found.");
     }else{
         users["users_list"] = newlist;
-        res.send(users)
+        res.status(204).send(users)
         console.log(`User ${id} deleted from user list`)
     }
 });
